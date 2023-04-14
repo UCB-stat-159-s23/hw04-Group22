@@ -156,8 +156,7 @@ const thebe_selector_output = ".output, .cell_output"
         </ul>
         <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="hw04_description.html">Homework No 4 - <em>From Notebooks to Research Packages, Part II</em></a></li>
-<li class="toctree-l1"><a class="reference internal" href="contribution_statement.html">Contribution Statement</a></li>
-
+<li class="toctree-l1"><a class="reference internal" href="contribution_statement.html">Aoyu</a></li>
 
 
 
@@ -1136,7 +1135,7 @@ The LIGO Scientific Collaboration, the Virgo Collaboration, <a class="reference 
     <span class="k">else</span><span class="p">:</span>           <span class="n">data</span> <span class="o">=</span> <span class="n">strain_H1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="c1"># -- Calculate the PSD of the data.  Also use an overlap, and window:</span>
-    <span class="n">data_psd</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">fs</span><span class="p">,</span> <span class="n">NFFT</span> <span class="o">=</span> <span class="n">NFFT</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">psd_window</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="n">NOVL</span><span class="p">)</span>
+    <span class="n">data_psd</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">fs</span><span class="p">,</span> <span class="n">NFFT</span> <span class="o">=</span> <span class="n">NFFT</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">psd_window</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NOVL</span><span class="p">))</span>
 
     <span class="c1"># Take the Fourier Transform (FFT) of the data and the template (with dwindow)</span>
     <span class="n">data_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">data</span><span class="o">*</span><span class="n">dwindow</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
@@ -1183,7 +1182,7 @@ The LIGO Scientific Collaboration, the Virgo Collaboration, <a class="reference 
     <span class="n">template_rolled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">template_phaseshifted</span><span class="p">,</span><span class="n">offset</span><span class="p">)</span> <span class="o">/</span> <span class="n">d_eff</span>  <span class="c1"># Apply time offset and scale amplitude</span>
     
     <span class="c1"># Whiten and band-pass the template for plotting</span>
-    <span class="n">template_whitened</span> <span class="o">=</span> <span class="n">ul</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">template_rolled</span><span class="p">,</span><span class="n">interp1d</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">data_psd</span><span class="p">),</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># whiten the template</span>
+    <span class="n">template_whitened</span> <span class="o">=</span> <span class="n">lt</span><span class="o">.</span><span class="n">whiten</span><span class="p">(</span><span class="n">template_rolled</span><span class="p">,</span><span class="n">interp1d</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">data_psd</span><span class="p">),</span><span class="n">dt</span><span class="p">)</span>  <span class="c1"># whiten the template</span>
     <span class="n">template_match</span> <span class="o">=</span> <span class="n">filtfilt</span><span class="p">(</span><span class="n">bb</span><span class="p">,</span> <span class="n">ab</span><span class="p">,</span> <span class="n">template_whitened</span><span class="p">)</span> <span class="o">/</span> <span class="n">normalization</span> <span class="c1"># Band-pass the template</span>
     
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;For detector </span><span class="si">{0}</span><span class="s1">, maximum at </span><span class="si">{1:.4f}</span><span class="s1"> with SNR = </span><span class="si">{2:.1f}</span><span class="s1">, D_eff = </span><span class="si">{3:.2f}</span><span class="s1">, horizon = </span><span class="si">{4:0.1f}</span><span class="s1"> Mpc&#39;</span> 
@@ -1207,60 +1206,18 @@ The LIGO Scientific Collaboration, the Virgo Collaboration, <a class="reference 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TypeError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">15</span><span class="p">],</span> <span class="n">line</span> <span class="mi">32</span>
-<span class="g g-Whitespace">     </span><span class="mi">29</span> <span class="k">else</span><span class="p">:</span>           <span class="n">data</span> <span class="o">=</span> <span class="n">strain_H1</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="g g-Whitespace">     </span><span class="mi">31</span> <span class="c1"># -- Calculate the PSD of the data.  Also use an overlap, and window:</span>
-<span class="ne">---&gt; </span><span class="mi">32</span> <span class="n">data_psd</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">psd</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Fs</span> <span class="o">=</span> <span class="n">fs</span><span class="p">,</span> <span class="n">NFFT</span> <span class="o">=</span> <span class="n">NFFT</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">psd_window</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="n">NOVL</span><span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="c1"># Take the Fourier Transform (FFT) of the data and the template (with dwindow)</span>
-<span class="g g-Whitespace">     </span><span class="mi">35</span> <span class="n">data_fft</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">data</span><span class="o">*</span><span class="n">dwindow</span><span class="p">)</span> <span class="o">/</span> <span class="n">fs</span>
-
-<span class="nn">File /srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:584,</span> in <span class="ni">psd</span><span class="nt">(x, NFFT, Fs, detrend, window, noverlap, pad_to, sides, scale_by_freq)</span>
-<span class="g g-Whitespace">    </span><span class="mi">534</span> <span class="nd">@_docstring</span><span class="o">.</span><span class="n">dedent_interpd</span>
-<span class="g g-Whitespace">    </span><span class="mi">535</span> <span class="k">def</span> <span class="nf">psd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">NFFT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">Fs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">detrend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">536</span>         <span class="n">noverlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pad_to</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale_by_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">537</span>     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="g g-Whitespace">    </span><span class="mi">538</span><span class="sd">     Compute the power spectral density.</span>
-<span class="g g-Whitespace">    </span><span class="mi">539</span><span class="sd"> </span>
-<span class="sd">   (...)</span>
-<span class="g g-Whitespace">    </span><span class="mi">582</span><span class="sd">     csd : returns the spectral density between two signals.</span>
-<span class="g g-Whitespace">    </span><span class="mi">583</span><span class="sd">     &quot;&quot;&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">584</span>     <span class="n">Pxx</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">csd</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NFFT</span><span class="o">=</span><span class="n">NFFT</span><span class="p">,</span> <span class="n">Fs</span><span class="o">=</span><span class="n">Fs</span><span class="p">,</span> <span class="n">detrend</span><span class="o">=</span><span class="n">detrend</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">585</span>                      <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span> <span class="n">pad_to</span><span class="o">=</span><span class="n">pad_to</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">586</span>                      <span class="n">sides</span><span class="o">=</span><span class="n">sides</span><span class="p">,</span> <span class="n">scale_by_freq</span><span class="o">=</span><span class="n">scale_by_freq</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">587</span>     <span class="k">return</span> <span class="n">Pxx</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">freqs</span>
-
-<span class="nn">File /srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:640,</span> in <span class="ni">csd</span><span class="nt">(x, y, NFFT, Fs, detrend, window, noverlap, pad_to, sides, scale_by_freq)</span>
-<span class="g g-Whitespace">    </span><span class="mi">638</span> <span class="k">if</span> <span class="n">NFFT</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">639</span>     <span class="n">NFFT</span> <span class="o">=</span> <span class="mi">256</span>
-<span class="ne">--&gt; </span><span class="mi">640</span> <span class="n">Pxy</span><span class="p">,</span> <span class="n">freqs</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_spectral_helper</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">NFFT</span><span class="o">=</span><span class="n">NFFT</span><span class="p">,</span> <span class="n">Fs</span><span class="o">=</span><span class="n">Fs</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">641</span>                                  <span class="n">detrend_func</span><span class="o">=</span><span class="n">detrend</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">642</span>                                  <span class="n">noverlap</span><span class="o">=</span><span class="n">noverlap</span><span class="p">,</span> <span class="n">pad_to</span><span class="o">=</span><span class="n">pad_to</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">643</span>                                  <span class="n">sides</span><span class="o">=</span><span class="n">sides</span><span class="p">,</span> <span class="n">scale_by_freq</span><span class="o">=</span><span class="n">scale_by_freq</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">644</span>                                  <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;psd&#39;</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">646</span> <span class="k">if</span> <span class="n">Pxy</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">647</span>     <span class="k">if</span> <span class="n">Pxy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-
-<span class="nn">File /srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:382,</span> in <span class="ni">_spectral_helper</span><span class="nt">(x, y, NFFT, Fs, detrend_func, window, noverlap, pad_to, sides, scale_by_freq, mode)</span>
-<span class="g g-Whitespace">    </span><span class="mi">378</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">window</span><span class="p">)</span> <span class="o">!=</span> <span class="n">NFFT</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">379</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">380</span>         <span class="s2">&quot;The window length must match the data&#39;s first dimension&quot;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">382</span> <span class="n">result</span> <span class="o">=</span> <span class="n">_stride_windows</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">NFFT</span><span class="p">,</span> <span class="n">noverlap</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">383</span> <span class="n">result</span> <span class="o">=</span> <span class="n">detrend</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">detrend_func</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">384</span> <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">*</span> <span class="n">window</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-
-<span class="nn">File /srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:258,</span> in <span class="ni">_stride_windows</span><span class="nt">(x, n, noverlap, axis)</span>
-<span class="g g-Whitespace">    </span><span class="mi">256</span>     <span class="k">if</span> <span class="n">noverlap</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">257</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;noverlap must be less than n&#39;</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">258</span>     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">stride_tricks</span><span class="o">.</span><span class="n">sliding_window_view</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">259</span>         <span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)[::</span><span class="n">n</span> <span class="o">-</span> <span class="n">noverlap</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
-<span class="g g-Whitespace">    </span><span class="mi">261</span> <span class="k">if</span> <span class="n">noverlap</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">262</span>     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;noverlap must be less than n&#39;</span><span class="p">)</span>
-
-<span class="ne">TypeError</span>: slice indices must be integers or None or have an __index__ method
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For detector H1, maximum at 1126259462.4395 with SNR = 18.6, D_eff = 814.44, horizon = 1889.6 Mpc
 </pre></div>
 </div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>For detector L1, maximum at 1126259462.4324 with SNR = 13.2, D_eff = 999.74, horizon = 1650.6 Mpc
+</pre></div>
+</div>
+<img alt="_images/7b3ed58e25ef026d3986b5ab8198a0b4c647e18fd4e86b22a8087ab3dfc50164.png" src="_images/7b3ed58e25ef026d3986b5ab8198a0b4c647e18fd4e86b22a8087ab3dfc50164.png" />
+<img alt="_images/52f5217e23417b3fa2c455f81adc69c90d33b96d46b0b5c182bc44860135ff20.png" src="_images/52f5217e23417b3fa2c455f81adc69c90d33b96d46b0b5c182bc44860135ff20.png" />
+<img alt="_images/292634476192dfa4a9b08892f5247f2e4f528678e01d7a34e74eb2ca5a76d2ec.png" src="_images/292634476192dfa4a9b08892f5247f2e4f528678e01d7a34e74eb2ca5a76d2ec.png" />
+<img alt="_images/d02eedb1bdc0a5e8218b6a0900017a7cfa74d19fde79fbd5e2653d1d3507a7a0.png" src="_images/d02eedb1bdc0a5e8218b6a0900017a7cfa74d19fde79fbd5e2653d1d3507a7a0.png" />
+<img alt="_images/773968ebe281d267e8814e1937305fce981e4b20b08a32e9782f9d575c6ed2de.png" src="_images/773968ebe281d267e8814e1937305fce981e4b20b08a32e9782f9d575c6ed2de.png" />
+<img alt="_images/f196d2de81a21b9ae4f4871cda53162dd95c67cfc46caefe807db5796bd7d25d.png" src="_images/f196d2de81a21b9ae4f4871cda53162dd95c67cfc46caefe807db5796bd7d25d.png" />
 </div>
 </div>
 <section id="notes-on-these-results">
@@ -1533,17 +1490,8 @@ GPS start, GPS stop and length of segment 0 in this file =  1126259446.0 1126259
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">27</span><span class="p">],</span> <span class="n">line</span> <span class="mi">7</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="n">irange</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">((</span><span class="n">times</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">times</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">))</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># construct a data structure for a csv file:</span>
-<span class="g g-Whitespace">      </span><span class="mi">6</span> <span class="n">dat</span> <span class="o">=</span> <span class="p">[</span><span class="n">times</span><span class="p">[</span><span class="n">irange</span><span class="p">],</span> <span class="n">strain_H1_whitenbp</span><span class="p">[</span><span class="n">irange</span><span class="p">],</span><span class="n">strain_L1_whitenbp</span><span class="p">[</span><span class="n">irange</span><span class="p">],</span>
-<span class="ne">----&gt; </span><span class="mi">7</span>       <span class="n">template_H1</span><span class="p">[</span><span class="n">irange</span><span class="p">],</span><span class="n">template_L1</span><span class="p">[</span><span class="n">irange</span><span class="p">]</span> <span class="p">]</span>
-<span class="g g-Whitespace">      </span><span class="mi">8</span> <span class="n">datcsv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">9</span> <span class="c1"># make a csv filename, header, and format</span>
-
-<span class="ne">NameError</span>: name &#39;template_H1&#39; is not defined
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Wrote whitened data to file GW150914_data.csv
+You can download this file by clicking &#39;jupyter&#39; in the top left corner, or using the &#39;data&#39; menu in Azure.
 </pre></div>
 </div>
 </div>
