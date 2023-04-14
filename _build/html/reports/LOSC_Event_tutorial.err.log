@@ -1,0 +1,173 @@
+Traceback (most recent call last):
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/client.py", line 1093, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/srv/conda/envs/notebook/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/client.py", line 559, in async_execute
+    await self.async_execute_cell(
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/client.py", line 854, in async_execute_cell
+    self._check_raise_for_error(cell, exec_reply)
+  File "/srv/conda/envs/notebook/lib/python3.10/site-packages/nbclient/client.py", line 756, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# -- To calculate the PSD of the data, choose an overlap and a window (common to all detectors)
+#   that minimizes "spectral leakage" https://en.wikipedia.org/wiki/Spectral_leakage
+NFFT = 4*fs
+psd_window = np.blackman(NFFT)
+# and a 50% overlap:
+NOVL = NFFT/2
+
+# define the complex template, common to both detectors:
+template = (template_p + template_c*1.j) 
+# We will record the time where the data match the END of the template.
+etime = time+template_offset
+# the length and sampling rate of the template MUST match that of the data.
+datafreq = np.fft.fftfreq(template.size)*fs
+df = np.abs(datafreq[1] - datafreq[0])
+
+# to remove effects at the beginning and end of the data stretch, window the data
+# https://en.wikipedia.org/wiki/Window_function#Tukey_window
+try:   dwindow = signal.tukey(template.size, alpha=1./8)  # Tukey window preferred, but requires recent scipy version 
+except: dwindow = signal.blackman(template.size)          # Blackman window OK if Tukey is not available
+
+# prepare the template fft.
+template_fft = np.fft.fft(template*dwindow) / fs
+
+# loop over the detectors
+dets = ['H1', 'L1']
+for det in dets:
+
+    if det == 'L1': data = strain_L1.copy()
+    else:           data = strain_H1.copy()
+
+    # -- Calculate the PSD of the data.  Also use an overlap, and window:
+    data_psd, freqs = mlab.psd(data, Fs = fs, NFFT = NFFT, window=psd_window, noverlap=NOVL)
+
+    # Take the Fourier Transform (FFT) of the data and the template (with dwindow)
+    data_fft = np.fft.fft(data*dwindow) / fs
+
+    # -- Interpolate to get the PSD values at the needed frequencies
+    power_vec = np.interp(np.abs(datafreq), freqs, data_psd)
+
+    # -- Calculate the matched filter output in the time domain:
+    # Multiply the Fourier Space template and data, and divide by the noise power in each frequency bin.
+    # Taking the Inverse Fourier Transform (IFFT) of the filter output puts it back in the time domain,
+    # so the result will be plotted as a function of time off-set between the template and the data:
+    optimal = data_fft * template_fft.conjugate() / power_vec
+    optimal_time = 2*np.fft.ifft(optimal)*fs
+
+    # -- Normalize the matched filter output:
+    # Normalize the matched filter output so that we expect a value of 1 at times of just noise.
+    # Then, the peak of the matched filter output will tell us the signal-to-noise ratio (SNR) of the signal.
+    sigmasq = 1*(template_fft * template_fft.conjugate() / power_vec).sum() * df
+    sigma = np.sqrt(np.abs(sigmasq))
+    SNR_complex = optimal_time/sigma
+
+    # shift the SNR vector by the template length so that the peak is at the END of the template
+    peaksample = int(data.size / 2)  # location of peak in the template
+    SNR_complex = np.roll(SNR_complex,peaksample)
+    SNR = abs(SNR_complex)
+
+    # find the time and SNR value at maximum:
+    indmax = np.argmax(SNR)
+    timemax = time[indmax]
+    SNRmax = SNR[indmax]
+
+    # Calculate the "effective distance" (see FINDCHIRP paper for definition)
+    # d_eff = (8. / SNRmax)*D_thresh
+    d_eff = sigma / SNRmax
+    # -- Calculate optimal horizon distnace
+    horizon = sigma/8
+
+    # Extract time offset and phase at peak
+    phase = np.angle(SNR_complex[indmax])
+    offset = (indmax-peaksample)
+
+    # apply time offset, phase, and d_eff to template 
+    template_phaseshifted = np.real(template*np.exp(1j*phase))    # phase shift the template
+    template_rolled = np.roll(template_phaseshifted,offset) / d_eff  # Apply time offset and scale amplitude
+    
+    # Whiten and band-pass the template for plotting
+    template_whitened = ul.whiten(template_rolled,interp1d(freqs, data_psd),dt)  # whiten the template
+    template_match = filtfilt(bb, ab, template_whitened) / normalization # Band-pass the template
+    
+    print('For detector {0}, maximum at {1:.4f} with SNR = {2:.1f}, D_eff = {3:.2f}, horizon = {4:0.1f} Mpc' 
+          .format(det,timemax,SNRmax,d_eff,horizon))
+
+    if make_plots:
+
+        # plotting changes for the detectors:
+        if det == 'L1': 
+            pcolor='g'
+            strain_whitenbp = strain_L1_whitenbp
+            template_L1 = template_match.copy()
+        else:
+            pcolor='r'
+            strain_whitenbp = strain_H1_whitenbp
+            template_H1 = template_match.copy()
+
+        # -- Plot the result
+        lt.plot_func(time, timemax, SNR, pcolor, det, eventname, fs, plottype, tevent, strain_whitenbp,template_match,template_fft, datafreq, d_eff, freqs, data_psd)
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mTypeError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[15], line 32[0m
+[1;32m     29[0m [38;5;28;01melse[39;00m:           data [38;5;241m=[39m strain_H1[38;5;241m.[39mcopy()
+[1;32m     31[0m [38;5;66;03m# -- Calculate the PSD of the data.  Also use an overlap, and window:[39;00m
+[0;32m---> 32[0m data_psd, freqs [38;5;241m=[39m [43mmlab[49m[38;5;241;43m.[39;49m[43mpsd[49m[43m([49m[43mdata[49m[43m,[49m[43m [49m[43mFs[49m[43m [49m[38;5;241;43m=[39;49m[43m [49m[43mfs[49m[43m,[49m[43m [49m[43mNFFT[49m[43m [49m[38;5;241;43m=[39;49m[43m [49m[43mNFFT[49m[43m,[49m[43m [49m[43mwindow[49m[38;5;241;43m=[39;49m[43mpsd_window[49m[43m,[49m[43m [49m[43mnoverlap[49m[38;5;241;43m=[39;49m[43mNOVL[49m[43m)[49m
+[1;32m     34[0m [38;5;66;03m# Take the Fourier Transform (FFT) of the data and the template (with dwindow)[39;00m
+[1;32m     35[0m data_fft [38;5;241m=[39m np[38;5;241m.[39mfft[38;5;241m.[39mfft(data[38;5;241m*[39mdwindow) [38;5;241m/[39m fs
+
+File [0;32m/srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:584[0m, in [0;36mpsd[0;34m(x, NFFT, Fs, detrend, window, noverlap, pad_to, sides, scale_by_freq)[0m
+[1;32m    534[0m [38;5;129m@_docstring[39m[38;5;241m.[39mdedent_interpd
+[1;32m    535[0m [38;5;28;01mdef[39;00m [38;5;21mpsd[39m(x, NFFT[38;5;241m=[39m[38;5;28;01mNone[39;00m, Fs[38;5;241m=[39m[38;5;28;01mNone[39;00m, detrend[38;5;241m=[39m[38;5;28;01mNone[39;00m, window[38;5;241m=[39m[38;5;28;01mNone[39;00m,
+[1;32m    536[0m         noverlap[38;5;241m=[39m[38;5;28;01mNone[39;00m, pad_to[38;5;241m=[39m[38;5;28;01mNone[39;00m, sides[38;5;241m=[39m[38;5;28;01mNone[39;00m, scale_by_freq[38;5;241m=[39m[38;5;28;01mNone[39;00m):
+[1;32m    537[0m     [38;5;124mr[39m[38;5;124;03m"""[39;00m
+[1;32m    538[0m [38;5;124;03m    Compute the power spectral density.[39;00m
+[1;32m    539[0m 
+[0;32m   (...)[0m
+[1;32m    582[0m [38;5;124;03m    csd : returns the spectral density between two signals.[39;00m
+[1;32m    583[0m [38;5;124;03m    """[39;00m
+[0;32m--> 584[0m     Pxx, freqs [38;5;241m=[39m [43mcsd[49m[43m([49m[43mx[49m[38;5;241;43m=[39;49m[43mx[49m[43m,[49m[43m [49m[43my[49m[38;5;241;43m=[39;49m[38;5;28;43;01mNone[39;49;00m[43m,[49m[43m [49m[43mNFFT[49m[38;5;241;43m=[39;49m[43mNFFT[49m[43m,[49m[43m [49m[43mFs[49m[38;5;241;43m=[39;49m[43mFs[49m[43m,[49m[43m [49m[43mdetrend[49m[38;5;241;43m=[39;49m[43mdetrend[49m[43m,[49m
+[1;32m    585[0m [43m                     [49m[43mwindow[49m[38;5;241;43m=[39;49m[43mwindow[49m[43m,[49m[43m [49m[43mnoverlap[49m[38;5;241;43m=[39;49m[43mnoverlap[49m[43m,[49m[43m [49m[43mpad_to[49m[38;5;241;43m=[39;49m[43mpad_to[49m[43m,[49m
+[1;32m    586[0m [43m                     [49m[43msides[49m[38;5;241;43m=[39;49m[43msides[49m[43m,[49m[43m [49m[43mscale_by_freq[49m[38;5;241;43m=[39;49m[43mscale_by_freq[49m[43m)[49m
+[1;32m    587[0m     [38;5;28;01mreturn[39;00m Pxx[38;5;241m.[39mreal, freqs
+
+File [0;32m/srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:640[0m, in [0;36mcsd[0;34m(x, y, NFFT, Fs, detrend, window, noverlap, pad_to, sides, scale_by_freq)[0m
+[1;32m    638[0m [38;5;28;01mif[39;00m NFFT [38;5;129;01mis[39;00m [38;5;28;01mNone[39;00m:
+[1;32m    639[0m     NFFT [38;5;241m=[39m [38;5;241m256[39m
+[0;32m--> 640[0m Pxy, freqs, _ [38;5;241m=[39m [43m_spectral_helper[49m[43m([49m[43mx[49m[38;5;241;43m=[39;49m[43mx[49m[43m,[49m[43m [49m[43my[49m[38;5;241;43m=[39;49m[43my[49m[43m,[49m[43m [49m[43mNFFT[49m[38;5;241;43m=[39;49m[43mNFFT[49m[43m,[49m[43m [49m[43mFs[49m[38;5;241;43m=[39;49m[43mFs[49m[43m,[49m
+[1;32m    641[0m [43m                                 [49m[43mdetrend_func[49m[38;5;241;43m=[39;49m[43mdetrend[49m[43m,[49m[43m [49m[43mwindow[49m[38;5;241;43m=[39;49m[43mwindow[49m[43m,[49m
+[1;32m    642[0m [43m                                 [49m[43mnoverlap[49m[38;5;241;43m=[39;49m[43mnoverlap[49m[43m,[49m[43m [49m[43mpad_to[49m[38;5;241;43m=[39;49m[43mpad_to[49m[43m,[49m
+[1;32m    643[0m [43m                                 [49m[43msides[49m[38;5;241;43m=[39;49m[43msides[49m[43m,[49m[43m [49m[43mscale_by_freq[49m[38;5;241;43m=[39;49m[43mscale_by_freq[49m[43m,[49m
+[1;32m    644[0m [43m                                 [49m[43mmode[49m[38;5;241;43m=[39;49m[38;5;124;43m'[39;49m[38;5;124;43mpsd[39;49m[38;5;124;43m'[39;49m[43m)[49m
+[1;32m    646[0m [38;5;28;01mif[39;00m Pxy[38;5;241m.[39mndim [38;5;241m==[39m [38;5;241m2[39m:
+[1;32m    647[0m     [38;5;28;01mif[39;00m Pxy[38;5;241m.[39mshape[[38;5;241m1[39m] [38;5;241m>[39m [38;5;241m1[39m:
+
+File [0;32m/srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:382[0m, in [0;36m_spectral_helper[0;34m(x, y, NFFT, Fs, detrend_func, window, noverlap, pad_to, sides, scale_by_freq, mode)[0m
+[1;32m    378[0m [38;5;28;01mif[39;00m [38;5;28mlen[39m(window) [38;5;241m!=[39m NFFT:
+[1;32m    379[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m(
+[1;32m    380[0m         [38;5;124m"[39m[38;5;124mThe window length must match the data[39m[38;5;124m'[39m[38;5;124ms first dimension[39m[38;5;124m"[39m)
+[0;32m--> 382[0m result [38;5;241m=[39m [43m_stride_windows[49m[43m([49m[43mx[49m[43m,[49m[43m [49m[43mNFFT[49m[43m,[49m[43m [49m[43mnoverlap[49m[43m)[49m
+[1;32m    383[0m result [38;5;241m=[39m detrend(result, detrend_func, axis[38;5;241m=[39m[38;5;241m0[39m)
+[1;32m    384[0m result [38;5;241m=[39m result [38;5;241m*[39m window[38;5;241m.[39mreshape(([38;5;241m-[39m[38;5;241m1[39m, [38;5;241m1[39m))
+
+File [0;32m/srv/conda/envs/notebook/lib/python3.10/site-packages/matplotlib/mlab.py:258[0m, in [0;36m_stride_windows[0;34m(x, n, noverlap, axis)[0m
+[1;32m    256[0m     [38;5;28;01mif[39;00m noverlap [38;5;241m>[39m[38;5;241m=[39m n:
+[1;32m    257[0m         [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mnoverlap must be less than n[39m[38;5;124m'[39m)
+[0;32m--> 258[0m     [38;5;28;01mreturn[39;00m [43mnp[49m[38;5;241;43m.[39;49m[43mlib[49m[38;5;241;43m.[39;49m[43mstride_tricks[49m[38;5;241;43m.[39;49m[43msliding_window_view[49m[43m([49m
+[1;32m    259[0m [43m        [49m[43mx[49m[43m,[49m[43m [49m[43mn[49m[43m,[49m[43m [49m[43maxis[49m[38;5;241;43m=[39;49m[38;5;241;43m0[39;49m[43m)[49m[43m[[49m[43m:[49m[43m:[49m[43mn[49m[43m [49m[38;5;241;43m-[39;49m[43m [49m[43mnoverlap[49m[43m][49m[38;5;241m.[39mT
+[1;32m    261[0m [38;5;28;01mif[39;00m noverlap [38;5;241m>[39m[38;5;241m=[39m n:
+[1;32m    262[0m     [38;5;28;01mraise[39;00m [38;5;167;01mValueError[39;00m([38;5;124m'[39m[38;5;124mnoverlap must be less than n[39m[38;5;124m'[39m)
+
+[0;31mTypeError[0m: slice indices must be integers or None or have an __index__ method
+TypeError: slice indices must be integers or None or have an __index__ method
+
