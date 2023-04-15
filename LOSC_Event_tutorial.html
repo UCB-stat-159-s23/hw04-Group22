@@ -3,11 +3,11 @@
 <!DOCTYPE html>
 
 
-<html >
+<html lang="en" >
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>BINARY BLACK HOLE SIGNALS IN LIGO OPEN DATA &#8212; My sample book</title>
   
@@ -44,6 +44,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <script src="_static/clipboard.min.js"></script>
     <script src="_static/copybutton.js"></script>
@@ -65,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Homework No 4 - From Notebooks to Research Packages, Part II" href="hw04_description.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="None"/>
+  <meta name="docsearch:language" content="en"/>
   </head>
   
   
@@ -401,7 +402,7 @@ document.write(`
                   
   <p>This repository is public so that Binder can find it. All code and data is based on the original <a class="reference external" href="https://github.com/losc-tutorial/LOSC_Event_tutorial">LIGO Center for Open Science Tutorial Repository</a>. This repository is a class exercise that restructures the original LIGO code for improved reproducibility, as a homework assignment for the <a class="reference external" href="https://ucb-stat-159-s23.github.io/">Spring 2023 installment of UC Berkeley’s Stat 159/259 course, <em>Reproducible and Collaborative Data Science</em></a>. Authorship of the original analysis code rests with the LIGO collaboration.</p>
 <section class="tex2jax_ignore mathjax_ignore" id="binary-black-hole-signals-in-ligo-open-data">
-<h1>BINARY BLACK HOLE SIGNALS IN LIGO OPEN DATA<a class="headerlink" href="#binary-black-hole-signals-in-ligo-open-data" title="Permalink to this headline">#</a></h1>
+<h1>BINARY BLACK HOLE SIGNALS IN LIGO OPEN DATA<a class="headerlink" href="#binary-black-hole-signals-in-ligo-open-data" title="Permalink to this heading">#</a></h1>
 <p>Version 1.64, 2022 July 05</p>
 <p>Welcome! This IPython notebook (or associated python script LOSC_Event_tutorial.py ) will go through some typical signal processing tasks on strain time-series data associated with the LIGO Event data releases from the LIGO Open Science Center (LOSC):</p>
 <ul class="simple">
@@ -412,16 +413,16 @@ document.write(`
 </ul>
 <p>Questions, comments, suggestions, corrections, etc: <a class="reference external" href="https://ask.igwn.org">ask.igwn.org</a></p>
 <section id="this-tutorial-is-intended-for-educational-purposes-the-code-shown-here-is-not-used-to-produce-results-papers-published-by-the-ligo-scientific-collaboration-which-instead-rely-on-special-purpose-analysis-software-packages">
-<h2>This tutorial is intended for educational purposes.  The code shown here is not used to produce results papers published by the LIGO Scientific Collaboration, which instead rely on special purpose analysis software packages.<a class="headerlink" href="#this-tutorial-is-intended-for-educational-purposes-the-code-shown-here-is-not-used-to-produce-results-papers-published-by-the-ligo-scientific-collaboration-which-instead-rely-on-special-purpose-analysis-software-packages" title="Permalink to this headline">#</a></h2>
+<h2>This tutorial is intended for educational purposes.  The code shown here is not used to produce results papers published by the LIGO Scientific Collaboration, which instead rely on special purpose analysis software packages.<a class="headerlink" href="#this-tutorial-is-intended-for-educational-purposes-the-code-shown-here-is-not-used-to-produce-results-papers-published-by-the-ligo-scientific-collaboration-which-instead-rely-on-special-purpose-analysis-software-packages" title="Permalink to this heading">#</a></h2>
 <section id="for-publicly-available-gravitational-wave-software-analysis-packages-that-are-used-to-produce-lsc-and-virgo-collaboration-results-papers-see-https-www-gwosc-org-software">
-<h3>For publicly available, gravitational-wave software analysis packages that are used to produce LSC and Virgo Collaboration results papers, see <a class="reference external" href="https://www.gwosc.org/software/">https://www.gwosc.org/software/</a>.<a class="headerlink" href="#for-publicly-available-gravitational-wave-software-analysis-packages-that-are-used-to-produce-lsc-and-virgo-collaboration-results-papers-see-https-www-gwosc-org-software" title="Permalink to this headline">#</a></h3>
+<h3>For publicly available, gravitational-wave software analysis packages that are used to produce LSC and Virgo Collaboration results papers, see <a class="reference external" href="https://www.gwosc.org/software/">https://www.gwosc.org/software/</a>.<a class="headerlink" href="#for-publicly-available-gravitational-wave-software-analysis-packages-that-are-used-to-produce-lsc-and-virgo-collaboration-results-papers-see-https-www-gwosc-org-software" title="Permalink to this heading">#</a></h3>
 </section>
 <section id="for-technical-notes-on-this-tutorial-see-https-www-gwosc-org-bbh-tutorial-notes">
-<h3>For technical notes on this tutorial, see <a class="reference external" href="https://www.gwosc.org/bbh_tutorial_notes/">https://www.gwosc.org/bbh_tutorial_notes/</a>.<a class="headerlink" href="#for-technical-notes-on-this-tutorial-see-https-www-gwosc-org-bbh-tutorial-notes" title="Permalink to this headline">#</a></h3>
+<h3>For technical notes on this tutorial, see <a class="reference external" href="https://www.gwosc.org/bbh_tutorial_notes/">https://www.gwosc.org/bbh_tutorial_notes/</a>.<a class="headerlink" href="#for-technical-notes-on-this-tutorial-see-https-www-gwosc-org-bbh-tutorial-notes" title="Permalink to this heading">#</a></h3>
 </section>
 </section>
 <section id="table-of-contents">
-<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">#</a></h2>
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a href='#Intro-to-signal-processing'>Intro to signal processing</a></p></li>
 <li><p><a href='#Download-the-data-on-a-computer-with-a-python-installation'>Download the data</a></p></li>
@@ -438,7 +439,7 @@ document.write(`
 </ul>
 </section>
 <section id="intro-to-signal-processing">
-<h2>Intro to signal processing<a class="headerlink" href="#intro-to-signal-processing" title="Permalink to this headline">#</a></h2>
+<h2>Intro to signal processing<a class="headerlink" href="#intro-to-signal-processing" title="Permalink to this heading">#</a></h2>
 <p>This tutorial assumes that you are comfortable with <a href="https://www.python.org/">python</a>.</p>
 <p>This tutorial also assumes that you know a bit about signal processing of digital time series data (or want to learn!). This includes power spectral densities, spectrograms, digital filtering, whitening, audio manipulation. This is a vast and complex set of topics, but we will cover many of the basics in this tutorial.</p>
 <p>If you are a beginner, here are some resources from the web:</p>
@@ -455,7 +456,7 @@ document.write(`
 <p>And, well, lots more on the web!</p>
 </section>
 <section id="download-the-data-on-a-computer-with-a-python-installation">
-<h2>Download the data on a computer with a python installation<a class="headerlink" href="#download-the-data-on-a-computer-with-a-python-installation" title="Permalink to this headline">#</a></h2>
+<h2>Download the data on a computer with a python installation<a class="headerlink" href="#download-the-data-on-a-computer-with-a-python-installation" title="Permalink to this heading">#</a></h2>
 <p>If you are using a pre-configured setup (eg, in binder), great! You don’t have to download or set up anything.</p>
 <p>Otherwise, to begin, get the necessary files, by downloading the zip file and unpacking it into single directory:</p>
 <ul class="simple">
@@ -480,7 +481,7 @@ document.write(`
 </ul>
 </section>
 <section id="set-the-event-name-to-choose-event-and-the-plot-type">
-<h2>Set the event name to choose event and the plot type<a class="headerlink" href="#set-the-event-name-to-choose-event-and-the-plot-type" title="Permalink to this headline">#</a></h2>
+<h2>Set the event name to choose event and the plot type<a class="headerlink" href="#set-the-event-name-to-choose-event-and-the-plot-type" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#-- SET ME   Tutorial should work with most binary black hole events</span>
@@ -527,7 +528,7 @@ document.write(`
 </div>
 </div>
 <section id="read-the-event-properties-from-a-local-json-file-download-in-advance">
-<h3>Read the event properties from a local json file (download in advance):<a class="headerlink" href="#read-the-event-properties-from-a-local-json-file-download-in-advance" title="Permalink to this headline">#</a></h3>
+<h3>Read the event properties from a local json file (download in advance):<a class="headerlink" href="#read-the-event-properties-from-a-local-json-file-download-in-advance" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Read the event properties from a local json file</span>
@@ -575,7 +576,7 @@ document.write(`
 </section>
 </section>
 <section id="read-in-the-data">
-<h2>Read in the data<a class="headerlink" href="#read-in-the-data" title="Permalink to this headline">#</a></h2>
+<h2>Read in the data<a class="headerlink" href="#read-in-the-data" title="Permalink to this heading">#</a></h2>
 <p>We will make use of the data, and waveform template, defined above.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -598,14 +599,14 @@ document.write(`
 </div>
 </section>
 <section id="data-gaps">
-<h2>Data Gaps<a class="headerlink" href="#data-gaps" title="Permalink to this headline">#</a></h2>
+<h2>Data Gaps<a class="headerlink" href="#data-gaps" title="Permalink to this heading">#</a></h2>
 <p><strong>NOTE</strong> that in general, LIGO strain time series data has gaps (filled with NaNs) when the detectors are not taking valid (“science quality”) data. Analyzing these data requires the user to
 <a href='https://www.gwosc.org/timeline/'>loop over “segments”</a> of valid data stretches.</p>
 <p><strong>In this tutorial, for simplicity, we assume there are no data gaps - this will not work for all times!</strong>  See the
 <a href='https://www.gwosc.org/timeline/'>notes on segments</a> for details.</p>
 </section>
 <section id="first-look-at-the-data-from-h1-and-l1">
-<h2>First look at the data from H1 and L1<a class="headerlink" href="#first-look-at-the-data-from-h1-and-l1" title="Permalink to this headline">#</a></h2>
+<h2>First look at the data from H1 and L1<a class="headerlink" href="#first-look-at-the-data-from-h1-and-l1" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># both H1 and L1 will have the same time vector, so:</span>
@@ -671,7 +672,7 @@ For L1, 32 out of 32 seconds contain usable DATA
 <p>The data are dominated by <strong>low frequency noise</strong>; there is no way to see a signal here, without some signal processing.</p>
 </section>
 <section id="plot-the-amplitude-spectral-density-asd">
-<h2>Plot the Amplitude Spectral Density (ASD)<a class="headerlink" href="#plot-the-amplitude-spectral-density-asd" title="Permalink to this headline">#</a></h2>
+<h2>Plot the Amplitude Spectral Density (ASD)<a class="headerlink" href="#plot-the-amplitude-spectral-density-asd" title="Permalink to this heading">#</a></h2>
 <p>Plotting these data in the Fourier domain gives us an idea of the frequency content of the data. A way to visualize the frequency content of the data is to plot the amplitude spectral density, ASD.</p>
 <p>The ASDs are the square root of the power spectral densities (PSDs), which are averages of the square of the fast fourier transforms (FFTs) of the data.</p>
 <p>They are an estimate of the “strain-equivalent noise” of the detectors versus frequency,
@@ -728,7 +729,7 @@ For the moment, let’s ignore that, and assume it’s all noise.</p>
 <p>The smooth model is hard-coded and tuned by eye; it won’t be right for arbitrary times. We will only use it below for things that don’t require much accuracy.</p>
 </section>
 <section id="binary-neutron-star-bns-detection-range">
-<h2>Binary Neutron Star (BNS) detection range<a class="headerlink" href="#binary-neutron-star-bns-detection-range" title="Permalink to this headline">#</a></h2>
+<h2>Binary Neutron Star (BNS) detection range<a class="headerlink" href="#binary-neutron-star-bns-detection-range" title="Permalink to this heading">#</a></h2>
 <p>A standard metric that LIGO uses to evaluate the sensitivity of our detectors, based on the detector noise ASD, is the BNS range.</p>
 <p>This is defined as the distance to which a LIGO detector can register a BNS signal with a single detector signal-to-noise ratio (SNR) of 8, averaged over source direction and orientation.  Here, SNR 8 is used as a nominal detection threshold, similar to typical CBC detection thresholds of SNR 6-8.</p>
 <p>We take each neutron star in the BNS system to have a mass of 1.4 times the mass of the sun, and negligible spin.</p>
@@ -817,11 +818,11 @@ L1 BNS inspiral horizon = 147.1 Mpc, BNS inspiral range   = 64.9 Mpc
 </div>
 </section>
 <section id="bbh-range-is-bns-range">
-<h2>BBH range is &gt;&gt; BNS range!<a class="headerlink" href="#bbh-range-is-bns-range" title="Permalink to this headline">#</a></h2>
+<h2>BBH range is &gt;&gt; BNS range!<a class="headerlink" href="#bbh-range-is-bns-range" title="Permalink to this heading">#</a></h2>
 <p>NOTE that, since mass is the source of gravity and thus also of gravitational waves, systems with higher masses (such as the binary black hole merger GW150914) are much “louder” and can be detected to much higher distances than the BNS range. We’ll compute the BBH range, using a template with specific masses, below.</p>
 </section>
 <section id="whitening">
-<h2>Whitening<a class="headerlink" href="#whitening" title="Permalink to this headline">#</a></h2>
+<h2>Whitening<a class="headerlink" href="#whitening" title="Permalink to this heading">#</a></h2>
 <p>From the ASD above, we can see that the data are very strongly “colored” - noise fluctuations are much larger at low and high frequencies and near spectral lines, reaching a roughly flat (“white”) minimum in the band around 80 to 300 Hz.</p>
 <p>We can “whiten” the data (dividing it by the noise amplitude spectrum, in the fourier domain), suppressing the extra noise at low frequencies and at the spectral lines, to better see the weak signals in the most sensitive band.</p>
 <p>Whitening is always one of the first steps in astrophysical data analysis (searches, parameter estimation).
@@ -848,7 +849,7 @@ Whitening requires no prior knowledge of spectral lines, etc; only the data are 
 </div>
 </section>
 <section id="spectrograms">
-<h2>Spectrograms<a class="headerlink" href="#spectrograms" title="Permalink to this headline">#</a></h2>
+<h2>Spectrograms<a class="headerlink" href="#spectrograms" title="Permalink to this heading">#</a></h2>
 <p>Now let’s plot a short time-frequency spectrogram around our event:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -947,7 +948,7 @@ Whitening requires no prior knowledge of spectral lines, etc; only the data are 
 <a href='https://www.gwosc.org/events/GW150914/'>event GW150914</a>, by changing the <code class="docutils literal notranslate"><span class="pre">eventname</span></code> variable in the first cell above.</p>
 </section>
 <section id="waveform-template">
-<h2>Waveform Template<a class="headerlink" href="#waveform-template" title="Permalink to this headline">#</a></h2>
+<h2>Waveform Template<a class="headerlink" href="#waveform-template" title="Permalink to this heading">#</a></h2>
 <p>The results of a full LIGO-Virgo analysis of this BBH event include a set of parameters that are consistent with a range of parameterized waveform templates. Here we pick one for use in matched filtering.</p>
 <p>As noted above, the results won’t be identical to what is in the LIGO-Virgo papers, since we’re skipping many subtleties, such as combining many consistent templates.</p>
 <div class="cell docutils container">
@@ -1090,7 +1091,7 @@ Radius of final BH = 199 km
 </div>
 </section>
 <section id="matched-filtering-to-find-the-signal">
-<h2>Matched filtering to find the signal<a class="headerlink" href="#matched-filtering-to-find-the-signal" title="Permalink to this headline">#</a></h2>
+<h2>Matched filtering to find the signal<a class="headerlink" href="#matched-filtering-to-find-the-signal" title="Permalink to this heading">#</a></h2>
 <p>Matched filtering is the optimal way to find a known signal buried in stationary, Gaussian noise. It is the standard technique used by the gravitational wave community to find GW signals from compact binary mergers in noisy detector data.</p>
 <p>For some loud signals, it may be possible to see the signal in the whitened data or spectrograms. On the other hand, low signal-to-noise ratio (SNR) signals or signals which are of long duration in time may not be visible, even in the whitened data.  LIGO scientists use matched filtering to find such “hidden” signals. A matched filter works by compressing the entire signal into one time bin (by convention, the “end time” of the waveform).</p>
 <p>LIGO uses a rather elaborate software suite to match the data against a family of such signal waveforms (“templates”), to find the best match. This procedure helps to “optimally” separate signals from instrumental noise, and to infer the parameters of the source (masses, spins, sky location, orbit orientation, etc) from the best match templates.</p>
@@ -1220,7 +1221,7 @@ For detector L1, maximum at 1126259462.4324 with SNR = 13.2, D_eff = 999.74, hor
 </div>
 </div>
 <section id="notes-on-these-results">
-<h3>Notes on these results<a class="headerlink" href="#notes-on-these-results" title="Permalink to this headline">#</a></h3>
+<h3>Notes on these results<a class="headerlink" href="#notes-on-these-results" title="Permalink to this heading">#</a></h3>
 <ul class="simple">
 <li><p>We make use of only one template, with a simple ASD estimate. The full analysis produces a Bayesian posterior result using many nearby templates. It does a more careful job estimating the ASD, and includes effects of uncertain calibration.</p></li>
 <li><p>As a result, our parameters (SNR, masses, spins, D_eff) are somewhat different from what you will see in our papers.</p></li>
@@ -1230,7 +1231,7 @@ For detector L1, maximum at 1126259462.4324 with SNR = 13.2, D_eff = 999.74, hor
 </section>
 </section>
 <section id="make-sound-files">
-<h2>Make sound files<a class="headerlink" href="#make-sound-files" title="Permalink to this headline">#</a></h2>
+<h2>Make sound files<a class="headerlink" href="#make-sound-files" title="Permalink to this heading">#</a></h2>
 <p>Make wav (sound) files from the filtered, downsampled data, +-2s around the event.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1254,7 +1255,7 @@ For detector L1, maximum at 1126259462.4324 with SNR = 13.2, D_eff = 999.74, hor
 </div>
 </div>
 <section id="listen-to-the-whitened-template-and-data">
-<h3>Listen to the whitened template and data<a class="headerlink" href="#listen-to-the-whitened-template-and-data" title="Permalink to this headline">#</a></h3>
+<h3>Listen to the whitened template and data<a class="headerlink" href="#listen-to-the-whitened-template-and-data" title="Permalink to this heading">#</a></h3>
 <p>With good headphones, you may be able to hear a faint thump in the middle; that’s our signal!</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1298,7 +1299,7 @@ For detector L1, maximum at 1126259462.4324 with SNR = 13.2, D_eff = 999.74, hor
 </div>
 </section>
 <section id="frequency-shift-the-audio-files">
-<h3>Frequency shift the audio files<a class="headerlink" href="#frequency-shift-the-audio-files" title="Permalink to this headline">#</a></h3>
+<h3>Frequency shift the audio files<a class="headerlink" href="#frequency-shift-the-audio-files" title="Permalink to this heading">#</a></h3>
 <p>We can enhance this by increasing the frequency;
 this is the “audio” equivalent of the enhanced visuals that NASA employs on telescope images with “false color”.</p>
 <p>The code below will shift the data up by 400 Hz (by taking an FFT, shifting/rolling the frequency series, then inverse fft-ing). The resulting sound file will be noticibly more high-pitched, and the signal will be easier to hear.</p>
@@ -1327,7 +1328,7 @@ this is the “audio” equivalent of the enhanced visuals that NASA employs on 
 </div>
 </section>
 <section id="listen-to-the-frequency-shifted-template-and-data">
-<h3>Listen to the frequency-shifted template and data<a class="headerlink" href="#listen-to-the-frequency-shifted-template-and-data" title="Permalink to this headline">#</a></h3>
+<h3>Listen to the frequency-shifted template and data<a class="headerlink" href="#listen-to-the-frequency-shifted-template-and-data" title="Permalink to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fna</span> <span class="o">=</span> <span class="n">eventname</span><span class="o">+</span><span class="s2">&quot;_template_shifted.wav&quot;</span>
@@ -1369,7 +1370,7 @@ this is the “audio” equivalent of the enhanced visuals that NASA employs on 
 </section>
 </section>
 <section id="data-segments">
-<h2>Data segments<a class="headerlink" href="#data-segments" title="Permalink to this headline">#</a></h2>
+<h2>Data segments<a class="headerlink" href="#data-segments" title="Permalink to this heading">#</a></h2>
 <p>As mentioned above, LIGO strain time series data has gaps (filled with NaNs) when the detectors are not taking valid (“science quality”) data. Analyzing these data requires the user to loop over “segments” of valid data stretches.  For details, see the <a href='https://www.gwosc.org/timeline/'>notes on segments</a> or <a href='https://www.gwosc.org/tutorials/'>introduction to LIGO data files</a>.</p>
 <p>In the code below, we can check times around this event for gaps in the L1 data.  You are welcome to repeat this with H1 data, with files containing 4096 seconds of data, and with data sampled at 16384 Hz. All of the relevant files can be downloaded from <a href='https://www.gwosc.org/events'>LOSC event pages.</a></p>
 <p>We also unpack the DQ and HW injection bits to check what their values are.</p>
@@ -1459,13 +1460,13 @@ GPS start, GPS stop and length of segment 0 in this file =  1126259446.0 1126259
 </div>
 </section>
 <section id="comments-on-sampling-rate">
-<h2>Comments on sampling rate<a class="headerlink" href="#comments-on-sampling-rate" title="Permalink to this headline">#</a></h2>
+<h2>Comments on sampling rate<a class="headerlink" href="#comments-on-sampling-rate" title="Permalink to this heading">#</a></h2>
 <p>LIGO data are acquired at 16384 Hz (2^14 Hz). Here, we have been working with data downsampled to 4096 Hz, to save on download time, disk space, and memory requirements.</p>
 <p>This is entirely sufficient for signals with no frequency content above f_Nyquist = fs/2 = 2048 Hz, such as signals from higher-mass binary black hole systems; the frequency at which the merger begins (at the innermost stable circular orbit) for equal-mass, spinless black holes is roughly 1557 Hz * (2.8/M_tot), where 2.8 solar masses is the total mass of a canonical binary neutron star system.</p>
 <p>If, however, you are interested in signals with frequency content above 2048 Hz, you need the data sampled at the full rate of 16384 Hz.</p>
 </section>
 <section id="construct-a-csv-file-containing-the-whitened-data-and-template">
-<h2>Construct a csv file containing the whitened data and template<a class="headerlink" href="#construct-a-csv-file-containing-the-whitened-data-and-template" title="Permalink to this headline">#</a></h2>
+<h2>Construct a csv file containing the whitened data and template<a class="headerlink" href="#construct-a-csv-file-containing-the-whitened-data-and-template" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># time vector around event</span>
