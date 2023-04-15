@@ -3,7 +3,7 @@
 SHELL = /bin/bash
 
 # creates and configures the environment.
-env: 
+env : 
         source /srv/conda/etc/profile.d/conda.sh
         conda env create -f environment.yml 
         conda activate notebook
