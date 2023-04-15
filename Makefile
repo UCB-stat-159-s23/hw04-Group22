@@ -11,13 +11,13 @@ env:
 	python -m ipykernel install --user --name ligo --display-name "ligo"
 
 #build the JupyterBook normally
-.PHONY:html
+.PHONY : html
 html:
 	jupyterbook build .
     
     
 #clean up the `figures`, `audio`  and `_build` folders.
-.PHONY:clean
+.PHONY : clean
 clean:
 	rm -rf figures/*
 	rm -rf audio/*
